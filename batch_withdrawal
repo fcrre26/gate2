@@ -35,7 +35,8 @@ try:
 except ApiException as e:
     logging.error(f"API 连通性检查失败: {str(e)}")
     print("API 连通性检查失败,无法继续操作。请检查您的 API_KEY 和 API_SECRET 是否正确。")
-    exit()
+    # 继续执行下一步操作,而不是退出程序
+    pass
 
 chain = input("请输入主链类型 (例如 BTC、ETH、MATIC): ")
 currency = input("请输入币种 (例如 BTC、ETH、MATIC): ")
@@ -50,11 +51,12 @@ try:
 except ApiException as e:
     logging.error(f"获取账户余额失败: {str(e)}")
     print("获取账户余额失败,无法继续操作。")
-    exit()
+    # 继续执行下一步操作,而不是退出程序
+    pass
 
 retry_count = 2
 retry_delay = 10
-interval = 10  # 默认10秒
+user_interval = 10  # 默认10秒
 
 addresses_and_amounts = []
 print("请输入提现地址和数量(以逗号分隔,一行一个,例如: \n0x4,9.7\n0x,9.2): ")
@@ -82,16 +84,14 @@ for address, amount in addresses_and_amounts:
 
 # 等待用户确认
 while True:
-    confirm = input("\n请确认无误后输入 'y' 继续, 或者输入 'n' 取消: ")
-    if confirm.strip().lower() == 'y':
+    confirm = input("\n请确认无误后输入 'yes' 继续, 或输入 'no' 取消: ")
+    if confirm.lower() == 'yes':
         break
-    elif confirm.strip().lower() == 'n':
-        print("取消提现操作。")
+    elif confirm.lower() == 'no':
+        print("已取消提现操作。")
         exit()
     else:
-        print("输入无效，请重新输入。")
-
-user_interval = int(input(f"\n请输入提现间隔时间(秒,默认为 {interval}): ")) or interval
+        print("输入无效,请重试。")
 
 def do_withdrawal(address, amount, chain, currency):
     try:
